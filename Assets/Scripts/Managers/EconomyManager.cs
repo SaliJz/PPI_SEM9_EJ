@@ -25,9 +25,13 @@ public class EconomyManager : MonoBehaviour
         Money += amount;
     }
 
-    public void Spend(int amount)
+    public bool CanAfford(int amount) => Money >= amount;
+
+    // Devuelve false si no hay fondos suficientes
+    public bool TrySpend(int amount)
     {
-        if (amount <= 0) return;
+        if (amount <= 0 || !CanAfford(amount)) return false;
         Money -= amount;
+        return true;
     }
 }
