@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EconomyManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class EconomyManager : MonoBehaviour
     [SerializeField] private int startingMoney = 1000;
 
     public int Money { get; private set; }
+    public event Action<int> OnMoneyChanged;
 
     private void Awake()
     {
@@ -16,22 +18,25 @@ public class EconomyManager : MonoBehaviour
             return;
         }
         Instance = this;
+
         Money = startingMoney;
+        OnMoneyChanged?.Invoke(Money);
     }
 
     public void Earn(int amount)
     {
         if (amount <= 0) return;
         Money += amount;
+        OnMoneyChanged?.Invoke(Money);
     }
 
-    public bool CanAfford(int amount) => Money >= amount;
-
-    // Devuelve false si no hay fondos suficientes
     public bool TrySpend(int amount)
     {
         if (amount <= 0 || !CanAfford(amount)) return false;
         Money -= amount;
+        OnMoneyChanged?.Invoke(Money);
         return true;
     }
+
+    public bool CanAfford(int amount) => Money >= amount;
 }
