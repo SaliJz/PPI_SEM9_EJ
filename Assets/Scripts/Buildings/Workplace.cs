@@ -18,5 +18,6 @@ public abstract class Workplace : Building, IEmployer
     public override void OnTick()
     {
         LastIncome = GenerateIncome();
+        if (LastIncome > 0) EconomyManager.Instance.Earn(LastIncome);
     }
 }
