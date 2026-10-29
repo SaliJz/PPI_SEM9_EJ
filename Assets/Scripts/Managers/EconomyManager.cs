@@ -18,4 +18,16 @@ public class EconomyManager : MonoBehaviour
         Instance = this;
         Money = startingMoney;
     }
+
+    public void Earn(int amount)
+    {
+        if (amount <= 0) return;
+        Money += amount;
+    }
+
+    public void Spend(int amount)
+    {
+        if (amount <= 0) return;
+        Money -= amount;
+    }
 }
