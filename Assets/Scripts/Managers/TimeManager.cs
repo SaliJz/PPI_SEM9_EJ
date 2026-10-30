@@ -12,6 +12,8 @@ public class TimeManager : MonoBehaviour
 
     public int Day { get; private set; } = 1;
     public event Action<int> OnDayPassed;
+    public bool IsPaused { get; private set; }
+    public float Speed { get; private set; } = 1f;
     // Observer: lista de suscriptores que quieren enterarse de cada tick
     private readonly List<ITickable> tickables = new List<ITickable>();
     private float timer;
@@ -40,7 +42,9 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        timer += Time.deltaTime;
+        if (IsPaused) return;
+
+        timer += Time.deltaTime * Speed;
         while (timer >= tickInterval)
         {
             timer -= tickInterval;
@@ -60,4 +64,7 @@ public class TimeManager : MonoBehaviour
             OnDayPassed?.Invoke(Day);
         }
     }
+
+    public void SetPaused(bool paused) => IsPaused = paused;
+    public void SetSpeed(float speed) => Speed = Mathf.Clamp(speed, 0.5f, 5f);
 }
