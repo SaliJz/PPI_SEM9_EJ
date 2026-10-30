@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,13 @@ public abstract class Workplace : Building, IEmployer
     public int Salary => salary;
     public bool HasVacancy => employees.Count < maxJobs;
     public int LastIncome { get; private set; }
+    public Func<Citizen, float> SalaryFormula { get; set; }
+
+    protected virtual void Awake()
+    {
+        // Salario base + 5% por cada punto de experiencia
+        SalaryFormula = c => salary * (1f + c.Experience * 0.05f);
+    }
 
     // Cada tipo de trabajo genera ingresos distintos
     protected abstract int GenerateIncome();
@@ -29,5 +37,19 @@ public abstract class Workplace : Building, IEmployer
     {
         LastIncome = GenerateIncome();
         if (LastIncome > 0) EconomyManager.Instance.Earn(LastIncome);
+
+        PaySalaries();
+    }
+
+    private void PaySalaries()
+    {
+        foreach (var worker in employees)
+        {
+            int pay = Mathf.RoundToInt(SalaryFormula(worker));
+            if (EconomyManager.Instance.TrySpend(pay))
+            {
+                worker.ReceiveSalary(pay);
+            }
+        }
     }
 }
