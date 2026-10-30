@@ -8,5 +8,5 @@ public class Shop : Workplace
         salary = 25;
     }
 
-    protected override int GenerateIncome() => filledJobs * 8;
+    protected override int GenerateIncome() => filledJobs * 40;
 }

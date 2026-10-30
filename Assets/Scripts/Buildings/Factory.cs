@@ -8,5 +8,5 @@ public class Factory : Workplace
         salary = 35;
     }
 
-    protected override int GenerateIncome() => filledJobs * 12;
+    protected override int GenerateIncome() => filledJobs * 60;
 }
