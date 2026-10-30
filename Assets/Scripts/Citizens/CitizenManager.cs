@@ -12,6 +12,25 @@ public class CitizenManager : MonoBehaviour
     public int Population => citizens.Count;
     public event Action<Citizen> OnCitizenAdded;
 
+    private void Start()
+    {
+        TimeManager.Instance.OnDayPassed += HandleDayPassed;
+    }
+
+    private void OnDestroy()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnDayPassed -= HandleDayPassed;
+        }
+    }
+
+    private void HandleDayPassed(int day)
+    {
+        int taxes = EconomyManager.Instance.CollectTaxes(citizens);
+        Debug.Log($"Día {day}: impuestos recaudados ${taxes} | Población: {Population}");
+    }
+
     public Citizen SpawnCitizen()
     {
         // Solo llega gente si hay casa libre
