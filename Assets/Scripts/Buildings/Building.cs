@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Building : MonoBehaviour
+public abstract class Building : MonoBehaviour, ITickable
 {
     [SerializeField] protected string buildingName = "Building";
     [SerializeField] protected int cost = 100;
