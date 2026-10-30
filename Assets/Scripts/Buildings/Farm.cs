@@ -8,5 +8,5 @@ public class Farm : Workplace
         salary = 15;
     }
 
-    protected override int GenerateIncome() => filledJobs * 5;
+    protected override int GenerateIncome() => filledJobs * 25;
 }
