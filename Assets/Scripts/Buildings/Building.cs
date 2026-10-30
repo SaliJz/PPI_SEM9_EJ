@@ -8,6 +8,22 @@ public abstract class Building : MonoBehaviour, ITickable
     public string BuildingName => buildingName;
     public int Cost => cost;
 
+    protected virtual void Start()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.Register(this);
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.Unregister(this);
+        }
+    }
+
     // Cada edificio decide qué hace en cada tick
     public abstract void OnTick();
 
