@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class CitizenManager : MonoBehaviour
 {
-    [SerializeField] private int arrivalsPerDay = 2;
-
     private static readonly string[] Names =
         { "Ana", "Luis", "María", "Carlos", "Sofía", "Diego", "Lucía", "Jorge", "Valeria", "Pedro" };
+
+    [SerializeField] private int arrivalsPerDay = 2;
+    [SerializeField] private BuildingPlacer placer;
 
     private readonly List<Citizen> citizens = new List<Citizen>();
     public IReadOnlyList<Citizen> Citizens => citizens;
@@ -17,6 +18,8 @@ public class CitizenManager : MonoBehaviour
     private void Start()
     {
         TimeManager.Instance.OnDayPassed += HandleDayPassed;
+
+        if (placer != null) placer.OnBuildingPlaced += HandleBuildingPlaced;
     }
 
     private void OnDestroy()
@@ -24,6 +27,25 @@ public class CitizenManager : MonoBehaviour
         if (TimeManager.Instance != null)
         {
             TimeManager.Instance.OnDayPassed -= HandleDayPassed;
+        }
+
+        if (placer != null) placer.OnBuildingPlaced -= HandleBuildingPlaced;
+    }
+
+    private void HandleBuildingPlaced(Building building)
+    {
+        // Si se construyó un lugar de trabajo, contrata a los desempleados
+        if (building is Workplace) AssignJobsToUnemployed();
+    }
+
+    private void AssignJobsToUnemployed()
+    {
+        foreach (var citizen in citizens)
+        {
+            if (citizen.IsEmployed) continue;
+            var workplace = FindWorkplaceWithVacancy();
+            if (workplace == null) break;
+            citizen.TryGetJob(workplace);
         }
     }
 
