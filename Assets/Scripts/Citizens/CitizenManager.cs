@@ -12,6 +12,25 @@ public class CitizenManager : MonoBehaviour
     public int Population => citizens.Count;
     public event Action<Citizen> OnCitizenAdded;
 
+    private void Start()
+    {
+        TimeManager.Instance.OnDayPassed += HandleDayPassed;
+    }
+
+    private void OnDestroy()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnDayPassed -= HandleDayPassed;
+        }
+    }
+
+    private void HandleDayPassed(int day)
+    {
+        int taxes = EconomyManager.Instance.CollectTaxes(citizens);
+        Debug.Log($"Día {day}: impuestos recaudados ${taxes} | Población: {Population}");
+    }
+
     public Citizen SpawnCitizen()
     {
         // Solo llega gente si hay casa libre
@@ -24,6 +43,7 @@ public class CitizenManager : MonoBehaviour
         var workplace = FindWorkplaceWithVacancy();
         if (workplace != null) citizen.TryGetJob(workplace);
 
+        TimeManager.Instance.Register(citizen);
         citizens.Add(citizen);
         OnCitizenAdded?.Invoke(citizen);
         return citizen;
@@ -49,12 +69,4 @@ public class CitizenManager : MonoBehaviour
 
     [ContextMenu("Debug: Spawn Citizen")]
     private void DebugSpawn() => SpawnCitizen();
-
-    [ContextMenu("Debug: Simulate 1 Tick")]
-    private void DebugTick()
-    {
-        foreach (var b in FindObjectsByType<Building>(FindObjectsSortMode.None)) b.OnTick();
-        foreach (var c in citizens) c.LiveTick();
-        Debug.Log($"Población: {Population} | Dinero ciudad: ${EconomyManager.Instance.Money}");
-    }
 }

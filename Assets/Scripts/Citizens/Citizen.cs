@@ -1,6 +1,6 @@
 using System;
 
-public class Citizen
+public class Citizen : ITickable
 {
     public string Name { get; }
     public int Money { get; private set; }
@@ -52,7 +52,7 @@ public class Citizen
     public void GainExperience() => Experience++;
 
     // Se llamará cada tick
-    public void LiveTick()
+    public void OnTick()
     {
         if (IsEmployed) GainExperience();
 
