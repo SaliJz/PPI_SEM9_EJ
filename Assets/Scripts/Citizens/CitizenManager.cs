@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CitizenManager : MonoBehaviour
 {
+    [SerializeField] private int arrivalsPerDay = 2;
+
     private static readonly string[] Names =
         { "Ana", "Luis", "María", "Carlos", "Sofía", "Diego", "Lucía", "Jorge", "Valeria", "Pedro" };
 
@@ -27,8 +29,14 @@ public class CitizenManager : MonoBehaviour
 
     private void HandleDayPassed(int day)
     {
+        // Llega gente nueva solo si hay casas con espacio
+        for (int i = 0; i < arrivalsPerDay; i++)
+        {
+            if (SpawnCitizen() == null) break;
+        }
+
         int taxes = EconomyManager.Instance.CollectTaxes(citizens);
-        Debug.Log($"Día {day}: impuestos recaudados ${taxes} | Población: {Population}");
+        Debug.Log($"Día {day}: impuestos ${taxes} | Población: {Population}");
     }
 
     public Citizen SpawnCitizen()
