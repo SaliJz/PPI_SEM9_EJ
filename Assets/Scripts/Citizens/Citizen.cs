@@ -10,6 +10,7 @@ public class Citizen
     public bool IsEmployed => Job != null;
     public event Action<int> OnMoneyChanged;
     public int Experience { get; private set; }
+    private const int LivingCost = 5;
 
     public Citizen(string name, int startingMoney = 50)
     {
@@ -49,4 +50,16 @@ public class Citizen
     }
 
     public void GainExperience() => Experience++;
+
+    // Se llamará cada tick
+    public void LiveTick()
+    {
+        if (IsEmployed) GainExperience();
+
+        // Gasta en renta/consumo; ese dinero va a la caja de la ciudad
+        if (HasHome && TrySpend(LivingCost))
+        {
+            EconomyManager.Instance.Earn(LivingCost);
+        }
+    }
 }
