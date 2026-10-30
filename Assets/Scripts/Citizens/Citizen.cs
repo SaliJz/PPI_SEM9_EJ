@@ -1,3 +1,5 @@
+using System;
+
 public class Citizen
 {
     public string Name { get; }
@@ -6,6 +8,7 @@ public class Citizen
     public bool HasHome => Home != null;
     public IEmployer Job { get; private set; }
     public bool IsEmployed => Job != null;
+    public event Action<int> OnMoneyChanged;
 
     public Citizen(string name, int startingMoney = 50)
     {
@@ -26,6 +29,21 @@ public class Citizen
         if (IsEmployed || employer == null) return false;
         if (!employer.Hire(this)) return false;
         Job = employer;
+        return true;
+    }
+
+    public void ReceiveSalary(int amount)
+    {
+        if (amount <= 0) return;
+        Money += amount;
+        OnMoneyChanged?.Invoke(Money);
+    }
+
+    public bool TrySpend(int amount)
+    {
+        if (amount <= 0 || Money < amount) return false;
+        Money -= amount;
+        OnMoneyChanged?.Invoke(Money);
         return true;
     }
 }
