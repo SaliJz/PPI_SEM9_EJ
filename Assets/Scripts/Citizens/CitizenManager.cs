@@ -24,6 +24,7 @@ public class CitizenManager : MonoBehaviour
         var workplace = FindWorkplaceWithVacancy();
         if (workplace != null) citizen.TryGetJob(workplace);
 
+        TimeManager.Instance.Register(citizen);
         citizens.Add(citizen);
         OnCitizenAdded?.Invoke(citizen);
         return citizen;
@@ -54,7 +55,7 @@ public class CitizenManager : MonoBehaviour
     private void DebugTick()
     {
         foreach (var b in FindObjectsByType<Building>(FindObjectsSortMode.None)) b.OnTick();
-        foreach (var c in citizens) c.LiveTick();
+        foreach (var c in citizens) c.OnTick();
         Debug.Log($"Población: {Population} | Dinero ciudad: ${EconomyManager.Instance.Money}");
     }
 }
