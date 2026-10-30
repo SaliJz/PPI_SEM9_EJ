@@ -9,6 +9,7 @@ public class Citizen
     public IEmployer Job { get; private set; }
     public bool IsEmployed => Job != null;
     public event Action<int> OnMoneyChanged;
+    public int Experience { get; private set; }
 
     public Citizen(string name, int startingMoney = 50)
     {
@@ -46,4 +47,6 @@ public class Citizen
         OnMoneyChanged?.Invoke(Money);
         return true;
     }
+
+    public void GainExperience() => Experience++;
 }
