@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildingPlacer : MonoBehaviour
 {
@@ -14,18 +15,39 @@ public class BuildingPlacer : MonoBehaviour
 
     public Building Selected => selected;
     public event Action<string> OnPlacementFailed;
+    public event Action<Building> OnBuildingPlaced;
+    public event Action<Building> OnSelectionChanged;
     private readonly HashSet<Vector2Int> occupied = new HashSet<Vector2Int>();
 
     public void SelectByIndex(int index)
     {
         if (index < 0 || index >= buildingPrefabs.Length) return;
         selected = buildingPrefabs[index];
+        OnSelectionChanged?.Invoke(selected);
+    }
+
+    public void Deselect()
+    {
+        selected = null;
+        OnSelectionChanged?.Invoke(null);
     }
 
     private void Update()
     {
         if (selected == null) return;
-        if (Input.GetMouseButtonDown(0)) TryPlace();
+
+        if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            Deselect();
+            return;
+        }
+
+        // No construir si el clic fue sobre un botón de la UI
+        if (Input.GetMouseButtonDown(0) &&
+            !(EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()))
+        {
+            TryPlace();
+        }
     }
 
     private void TryPlace()
@@ -45,7 +67,8 @@ public class BuildingPlacer : MonoBehaviour
         }
 
         occupied.Add(cell);
-        Instantiate(selected, CellToWorld(cell), Quaternion.identity);
+        Building placed = Instantiate(selected, CellToWorld(cell), Quaternion.identity);
+        OnBuildingPlaced?.Invoke(placed);
     }
 
     private bool TryGetCell(out Vector2Int cell)
