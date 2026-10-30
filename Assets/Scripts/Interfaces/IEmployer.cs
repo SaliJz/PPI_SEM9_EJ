@@ -4,4 +4,5 @@ public interface IEmployer
     int FilledJobs { get; }
     int Salary { get; }
     bool HasVacancy { get; }
+    bool Hire(Citizen citizen);
 }
