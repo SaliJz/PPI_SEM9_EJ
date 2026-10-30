@@ -46,4 +46,15 @@ public class CitizenManager : MonoBehaviour
         }
         return null;
     }
+
+    [ContextMenu("Debug: Spawn Citizen")]
+    private void DebugSpawn() => SpawnCitizen();
+
+    [ContextMenu("Debug: Simulate 1 Tick")]
+    private void DebugTick()
+    {
+        foreach (var b in FindObjectsByType<Building>(FindObjectsSortMode.None)) b.OnTick();
+        foreach (var c in citizens) c.LiveTick();
+        Debug.Log($"Población: {Population} | Dinero ciudad: ${EconomyManager.Instance.Money}");
+    }
 }
