@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingPlacer : MonoBehaviour
@@ -11,6 +13,8 @@ public class BuildingPlacer : MonoBehaviour
     private readonly Plane ground = new Plane(Vector3.up, Vector3.zero);
 
     public Building Selected => selected;
+    public event Action<string> OnPlacementFailed;
+    private readonly HashSet<Vector2Int> occupied = new HashSet<Vector2Int>();
 
     public void SelectByIndex(int index)
     {
@@ -27,6 +31,20 @@ public class BuildingPlacer : MonoBehaviour
     private void TryPlace()
     {
         if (!TryGetCell(out Vector2Int cell)) return;
+
+        if (occupied.Contains(cell))
+        {
+            OnPlacementFailed?.Invoke("Esa celda ya está ocupada");
+            return;
+        }
+
+        if (!EconomyManager.Instance.TrySpend(selected.Cost))
+        {
+            OnPlacementFailed?.Invoke($"Dinero insuficiente: necesitas ${selected.Cost}");
+            return;
+        }
+
+        occupied.Add(cell);
         Instantiate(selected, CellToWorld(cell), Quaternion.identity);
     }
 
